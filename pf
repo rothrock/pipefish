@@ -1,0 +1,4 @@
+#!/bin/bash
+[[ -z $JAVA_HOME ]] && echo "JAVA_HOME not set. Stopping now." && exit 1
+. /usr/local/bin/pipefish_classpath
+exec /usr/local/bin/pipefish "$@"

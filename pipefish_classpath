@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# We think the jars we need  are here...
+FIND_IT=/usr/lib/hadoop/client
+# But maybe they are here instead.
+if [[ $HADOOP_COMMON_HOME ]]; then
+  FIND_IT=$HADOOP_COMMON_HOME
+fi
+
+# We think the config is here...
+CLASSPATH="/etc/hadoop/conf"
+# But it may be here.
+[[ $HADOOP_CONF_DIR ]] && CLASSPATH=$HADOOP_CONF_DIR
+
+# Build up the classpath. Try not to include stuff we don't need.
+if [[ -d $FIND_IT ]]; then
+  for file in `find ${FIND_IT}/ -name \*.jar | egrep -v "httpfs|stax|mockito|jettison|jaxb|jersey|xml|jackson|zookeeper|junit|yarn|mapreduce|jetty"`
+  do
+     CLASSPATH="$CLASSPATH:$file"
+  done
+fi
+export CLASSPATH
+export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:/usr/lib/hadoop/lib/native

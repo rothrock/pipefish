@@ -1,0 +1,6 @@
+On Ubuntu
+=========
+Set JAVA_HOME.
+Install Cloudera CDH4.
+To build it, type make.
+Type `make install' to put it in /usr/local/bin.
