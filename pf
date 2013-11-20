@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
+
+if [[ -z "$JAVA_HOME" ]]; then # Try to set it.
+  [[ "`uname`" = "Darwin" ]] && test -e /usr/libexec/java_home && export JAVA_HOME=`/usr/libexec/java_home`
+  test -e /usr/lib/bigtop-utils/bigtop-detect-javahome && . /usr/lib/bigtop-utils/bigtop-detect-javahome
+fi
 [[ -z $JAVA_HOME ]] && echo "JAVA_HOME not set. Stopping now." && exit 1
+echo "Using JAVA_HOME=$JAVA_HOME"
+
 . /usr/local/bin/pipefish_classpath
 exec /usr/local/bin/pipefish "$@"

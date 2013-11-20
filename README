@@ -1,6 +1,51 @@
 On Ubuntu
 =========
 Set JAVA_HOME.
-Install Cloudera CDH4.
-To build it, type make.
-Type `make install' to put it in /usr/local/bin.
+
+Install MySQL development libs.
+
+Install Cloudera CDH4 packages.
+
+Get the libhdfs header.
+
+  The header file hdfs.h does not come with the CDH4 packages, so
+  you will need to fetch it from somewhere. Here is one place:
+
+  curl -o hdfs.h https://raw.github.com/apache/hadoop-common/trunk/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/hdfs.h
+
+Build and install it.
+
+  $ make
+  $ sudo make install
+
+  `make install' puts it in /usr/local/bin.
+
+
+On a Mac
+========
+Install MySQL development libs.
+
+Build the HDFS libs from a Cloudera tarball distribution
+
+  I couldn't get this to work with CDH4.
+
+  Get your gcc toolchain installed along with cmake, ant, and maven.
+  Download and upack the CDH5 tarball.
+  I used hadoop-2.2.0-cdh5.0.0-beta-1.tar.gz
+
+  Build just the hdfs lib that we need:
+
+  $ cd hadoop-2.2.0-cdh5.0.0-beta-1/src/hadoop-hdfs-project/hadoop-hdfs
+  $ sudo mvn package -Pdist,native -DskipTests
+
+  Built OK? Put the headers and libs in a place that GCC can find them:
+
+  $ sudo cp `find target/native -name libhdfs\.*` /usr/local/lib
+  $ sudo cp `find target -name hdfs.h` /usr/local/include
+
+Build and install it.
+
+  $ make
+  $ sudo make install
+
+  `make install' puts it in /usr/local/bin.
