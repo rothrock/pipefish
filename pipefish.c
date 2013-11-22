@@ -13,12 +13,14 @@ typedef struct opt_arg_struct {
   char* hdfs_path;
   char* sql;
   char* defaults_file;
+  char* help;
+  char* overwrite;
 } opt_arg_struct_t;
 
 opt_arg_struct_t args;
 
 int usage() {
-  printf("usage: pf --defaults_file='/path/to/my.cnf' --user='user' --host='host' --db='db name' --password='password' --hdfs_path='/path/to/file' --sql='sql statement'\n");
+  printf("args:\n --defaults_file='/path/to/my.cnf'\n --user='user'\n --host='host'\n --db='db name'\n --password='password'\n --hdfs_path='/path/to/file'\n --sql='sql statement'\n [--overwrite]\n");
   printf("user, host, db, and password settings override those specified in defaults_file.\n");
   exit(1);
 }
@@ -41,6 +43,7 @@ int main(int argc, char* argv[]) {
   unsigned int i;
   int opt = 0;
   int opt_index = 0; 
+  int hdfs_flags = O_WRONLY|O_APPEND;
 
   static struct option long_opts[] =
     {
@@ -51,11 +54,12 @@ int main(int argc, char* argv[]) {
       {"hdfs_path",      required_argument, 0, 5},
       {"sql",            required_argument, 0, 6},
       {"defaults_file",  required_argument, 0, 7},
-      {"help",           optional_argument, 0, 8},
+      {"help",           no_argument,       0, 8},
+      {"overwrite",      no_argument,       0, 9},
       {0, 0, 0, 0}
     };
 
-  opt = getopt_long_only(argc, argv, "1:2:3:4:5:6:7:8", long_opts, &opt_index);
+  opt = getopt_long_only(argc, argv, "1:2:3:4:5:6:7:89", long_opts, &opt_index);
   while( opt != -1) {
     switch(opt) {
       case 1: // db hostname
@@ -88,11 +92,16 @@ int main(int argc, char* argv[]) {
 
       case 8: // help
         usage();
+        break;
+
+      case 9: // overwrite
+        hdfs_flags = O_WRONLY|O_CREAT;
+        break;
 
       default:
         usage();
     }
-    opt = getopt_long_only(argc, argv, "1:2:3:4:5:6:7", long_opts, &opt_index);
+    opt = getopt_long_only(argc, argv, "1:2:3:4:5:6:7:89", long_opts, &opt_index);
   }
 
   conn = mysql_init(NULL);
@@ -106,6 +115,11 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "Error connecting to MySQL. %u: %s\n", mysql_errno(conn), mysql_error(conn));
     exit(1);
   }
+
+  if (!(args.sql)) {
+    printf("SQL statement required.\n");
+    usage();
+  }
   if (mysql_query(conn, args.sql) != 0) {
     fprintf(stderr, "Error running SQL statement. %u: %s\n", mysql_errno(conn), mysql_error(conn));
     exit(1);
@@ -116,7 +130,11 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "Cannot connect to HDFS.\n");
     exit(1);
   }
-  if (!(file_handle = hdfsOpenFile(fs, args.hdfs_path, O_WRONLY|O_CREAT, 0, 0, 0))) {
+  if (!(args.hdfs_path)) {
+    printf("HDFS path required.\n");
+    usage();
+  }
+  if (!(file_handle = hdfsOpenFile(fs, args.hdfs_path, hdfs_flags, 0, 0, 0))) {
     fprintf(stderr, "Failed to open %s for writing.\n", args.hdfs_path);
     exit(1);
   }
