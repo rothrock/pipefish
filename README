@@ -1,11 +1,15 @@
+Have you ever wanted to send your MySQL query results directly to a file
+in HDFS? Well, now you can!
+
 Pipefish sends the result of your SQL statement to a tab-delimited file in hdfs. 
 
 It doesn't create any intermediate or temporary files. 
-It just reads the rows from the MySQL server and writes them to a file in HDFS.
+It just reads the rows from the MySQL server and writes them as tab-delimited
+fields to a file in HDFS that you specify.
 At the end of the row-set, pipefish flushes and closes the hdfs file and
 closes the MySQL connection.
 
-Supply --overwrite to truncate the file instead of appending to it.
+Usage:
 
 $ pf --help
 args:
@@ -19,6 +23,8 @@ args:
  [--overwrite]
 user, host, db, and password settings override those specified in defaults_file.
 
+Supply --overwrite to truncate the file instead of appending to it.
+
 
 B U I L D   I N S T R U C T I O N S
 ===================================
@@ -27,6 +33,8 @@ B U I L D   I N S T R U C T I O N S
 On Ubuntu
 =========
 Set JAVA_HOME.
+
+Install Java architecture independent libraries. For me this was openjdk-6-jre-lib.
 
 Install MySQL development libs.
 
