@@ -29,25 +29,32 @@ Supply --overwrite to truncate the file instead of appending to it.
 B U I L D   I N S T R U C T I O N S
 ===================================
 
-
-On Ubuntu
+Linux
 =========
+
 Set JAVA_HOME.
 
-Install Java architecture independent libraries. For me this was openjdk-6-jre-lib.
+Install Java architecture independent libraries. For example, openjdk-6-jre-lib.
 
 Install MySQL development libs.
 
-Install Cloudera CDH4 packages.
+Install the libhdfs development bits from Cloudera.
 
-Get the libhdfs header.
+  If your dev environment uses 'parcels' installed by Cloudera Manager,
+  make sure your host configured as an HDFS gateway.
+  That will get you the HDFS headers and libs that you'll need.
 
-  The header file hdfs.h does not come with the CDH4 packages, so
-  you will need to fetch it from somewhere. Here is one place:
+  -- Otherwise --
 
-  curl -o hdfs.h https://raw.github.com/apache/hadoop-common/trunk/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/hdfs.h
+  Configure your package manager by downloading and installing the "1-click install" package.
+  http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH5/latest/CDH5-Installation-Guide/cdh5ig_cdh5_install.html?scroll=concept_gp2_q32_24_unique_1
 
-Build and install it.
+  And then:
+
+  $ sudo apt-get install libhdfs0-dev (Ubuntu)
+  $ sudo yum install hadoop-libhdfs-devel (Linux)
+
+Build and install pipefish.
 
   $ make
   $ sudo make install
@@ -57,25 +64,27 @@ Build and install it.
 
 On a Mac
 ========
+
+Install Java
+
 Install MySQL development libs.
 
-Build the HDFS libs from a Cloudera tarball distribution
-
-  I couldn't get this to work with CDH4.
+Build the HDFS libs from a Cloudera tarball distribution.
 
   Get your gcc toolchain installed along with cmake, ant, and maven.
-  Download and upack the CDH5 tarball.
-  I used hadoop-2.2.0-cdh5.0.0-beta-1.tar.gz
+
+  Download and upack the CDH5 tarball. For example:
+  http://archive.cloudera.com/cdh5/cdh/5/hadoop-2.3.0-cdh5.1.0.tar.gz
 
   Build just the hdfs lib that we need:
 
-  $ cd hadoop-2.2.0-cdh5.0.0-beta-1/src/hadoop-hdfs-project/hadoop-hdfs
+  $ cd hadoop-2.2.0-cdh5.1.0/src/hadoop-hdfs-project/hadoop-hdfs
   $ sudo mvn package -Pdist,native -DskipTests
 
   Built OK? Put the headers and libs in a place that GCC can find them:
 
-  $ sudo cp `find target/native -name libhdfs\.*` /usr/local/lib
-  $ sudo cp `find target -name hdfs.h` /usr/local/include
+  $ sudo cp `find target/native -name libhdfs\.*` /usrxx/local/lib
+  $ sudo cp `find target -name hdfs.h` /usr/include
 
 Build and install it.
 
