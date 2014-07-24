@@ -78,12 +78,12 @@ Build the HDFS libs from a Cloudera tarball distribution.
 
   Build just the hdfs lib that we need:
 
-  $ cd hadoop-2.2.0-cdh5.1.0/src/hadoop-hdfs-project/hadoop-hdfs
+  $ cd hadoop-2.3.0-cdh5.1.0/src/hadoop-hdfs-project/hadoop-hdfs
   $ sudo mvn package -Pdist,native -DskipTests
 
   Built OK? Put the headers and libs in a place that GCC can find them:
 
-  $ sudo cp `find target/native -name libhdfs\.*` /usrxx/local/lib
+  $ sudo cp `find target/native -name libhdfs\.*` /usr/lib
   $ sudo cp `find target -name hdfs.h` /usr/include
 
 Build and install it.
